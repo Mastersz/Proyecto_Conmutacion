@@ -4,11 +4,17 @@
     Profesor: Adriana Collaguazo
 '''
 "Librerias importadas"
-
+from tkinter import messagebox as ms
 import tkinter as tk
 import tkinter.messagebox as tm
+import sqlite3
+# make database and users (if not exists already) table at programme start up
+with sqlite3.connect('login.db') as db:
+    c = db.cursor()
 
-
+c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL ,password TEX NOT NULL);')
+db.commit()
+db.close()
 
 class Mainframe(tk.Tk):
     def __init__(self):
@@ -30,21 +36,21 @@ class FirstFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
 
         master.title("Please enter your information")
-        master.geometry("400x300")
+        master.geometry("300x200")
         self.status = tk.Label(self, fg='red')
         self.status.pack()
-        usr = tk.Label(self, text='Enter username')
+        usr = tk.Label(self, text='Enter username', font=('', 15))
         usr.pack()
         self.usr = tk.Entry(self)
         self.usr.pack()
         self.usr.focus()
-        lbl = tk.Label(self, text='Enter password')
+        lbl = tk.Label(self, text='Enter password', font=('', 15))
         lbl.pack()
         self.pwd = tk.Entry(self, show="*")
         self.pwd.pack()
         self.pwd.focus()
         self.pwd.bind('<Return>', self.check)
-        btn = tk.Button(self, text="Login", command=self.check)
+        btn = tk.Button(self, text="Login", font=('', 15), command=self.check)
 
         btn.pack()
 
@@ -54,16 +60,28 @@ class FirstFrame(tk.Frame):
             Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
             Si falta informaciòn retorna el respectivo mensaje con la informaciòn que falte
         '''
-        if self.pwd.get() == 'hola' and self.usr.get() == 'marlon':
-            # incluir aqui la validacion de conexion ssh
-            tm.showerror("Login info", "Bienvenido Marlon")
+        with sqlite3.connect('login.db') as db:
+            c = db.cursor()
+
+        # Find user If there is any take proper action
+        find_user = ('SELECT * FROM user WHERE username = ? and password = ?')
+        c.execute(find_user, [(self.usr.get()), (self.pwd.get())])
+        result = c.fetchall()
+
+        if result:
+            tm.showinfo("Login info",self.usr.get() + '\n Bienvenid@')
             self.master.change(SecondFrame)
-        elif self.pwd.get() != 'hola' and self.usr.get() == 'marlon':
-            tm.showerror("Login error", "Contraseña Incorrecta")
+        elif self.usr.get() == '' and self.pwd.get() == '':
+            tm.showerror("Login error", "Ingrese información")
         elif self.usr.get() == '':
             tm.showerror("Login error", "Usuario faltante")
         elif self.pwd.get() == '':
             tm.showerror("Login error", "Contraseña faltante")
+
+        else:
+            ms.showerror('Oops!', 'Nombre de usuario o contraseña incorrecto.')
+
+        # Frame Packing Methords
 
 
 class SecondFrame(tk.Frame):
@@ -71,7 +89,7 @@ class SecondFrame(tk.Frame):
         "Inicializa la segunda ventana con los dispositivos a configurar"
         tk.Frame.__init__(self, master, **kwargs)
         master.title("Main application")
-        master.geometry("200x200")
+        master.geometry("300x200")
 
         def configuration():
             '''alida el redio botòn seleccionado y despliega la ventana correspondiente
