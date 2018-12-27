@@ -9,7 +9,7 @@ import tkinter as tk
 import tkinter.messagebox as tm
 import sqlite3
 # make database and users (if not exists already) table at programme start up
-with sqlite3.connect('login.db') as db:
+with sqlite3.connect('DataBase.db') as db:
     c = db.cursor()
 
 c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL ,password TEX NOT NULL);')
@@ -60,7 +60,7 @@ class FirstFrame(tk.Frame):
             Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
             Si falta informaciòn retorna el respectivo mensaje con la informaciòn que falte
         '''
-        with sqlite3.connect('login.db') as db:
+        with sqlite3.connect('DataBase.db') as db:
             c = db.cursor()
 
         # Find user If there is any take proper action
