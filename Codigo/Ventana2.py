@@ -89,6 +89,7 @@ class FirstFrame(tk.Frame):
         # Frame Packing Methords
 
 class ConfigFrame(tk.Frame):
+
     def __init__(self, master=None, **kwargs):
         "Ventana principal que contiene el inicio de sesiòn del usuario"
         tk.Frame.__init__(self, master, **kwargs)
@@ -107,7 +108,7 @@ class ConfigFrame(tk.Frame):
         r_btn1.pack()
         r_btn2.pack()
         r_btn3.pack()
-        rbtn_value=rbtn_val.get()
+        rbtn_value = rbtn_val.get()
         ip = tk.Label(self, text='IP', font=('', 10))
         ip.pack()
         self.ip = tk.Entry(self)
@@ -124,11 +125,11 @@ class ConfigFrame(tk.Frame):
         self.pwd.pack()
         self.pwd.focus()
         self.pwd.bind('<Return>', self.check2)
-        btn = tk.Button(self, text="Conectar", font=('', 10), command=self.check2)
+        btn = tk.Button(self, text="Conectar", font=('', 10), command=lambda: self.check2(btnS=rbtn_value))
 
         btn.pack()
 
-    def check2(self, event=None):
+    def check2(self, event=None,btnS=0):
         '''Chequea los eventos del botòn Login
             Si los datos son correctos retorna Bienvenido (Nombre del usuario) y la siguiente ventana
             Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
@@ -141,21 +142,19 @@ class ConfigFrame(tk.Frame):
         find_user = ('SELECT * FROM user WHERE username = ? ')
         c.execute(find_user, [(self.usr.get())])
         result = c.fetchall()
-
-        if self.usr.get() == '' and self.pwd.get() == ''and self.ip.get() == '':
-            tm.showerror("Login error", "Ingrese información")
-        elif self.ip.get() == '':
-            tm.showerror("Login error", "IP faltante")
-        elif self.usr.get() == '':
-            tm.showerror("Login error", "Usuario faltante")
-        elif self.pwd.get() == '':
-            tm.showerror("Login error", "Contraseña faltante")
+        if btnS== 0 or self.usr.get() == '' or self.pwd.get() == ''or self.ip.get() == '':
+            tm.showerror('Oops!','Falta información, inténtelo de nuevo.')
         elif result:
             find_pwd = ('SELECT * FROM user WHERE password = ? ')
             c.execute(find_pwd, [(self.pwd.get())])
             pwd_correcto = c.fetchall()
             if pwd_correcto:
-                self.master.change(SecondFrame)
+                if btnS== 1:
+                    self.master.change(ThirdFrame)
+                elif btnS == 2:
+                    self.master.change(FourthFrame)
+                elif btnS == 3:
+                    self.master.change(FifthFrame)
             else:
                 ms.showerror('Oops!', 'Contraseña incorrecta.')
         else:
@@ -163,40 +162,6 @@ class ConfigFrame(tk.Frame):
         # Frame Packing Methords
 
 
-class SecondFrame(tk.Frame):
-    def __init__(self, master=None, **kwargs):
-        "Inicializa la segunda ventana con los dispositivos a configurar"
-        tk.Frame.__init__(self, master, **kwargs)
-        master.title("Main application")
-        master.geometry("300x200")
-
-        def configuration():
-            '''alida el redio botòn seleccionado y despliega la ventana correspondiente
-            para realizar la configuraciòn del dispositivo
-            '''
-            if rbtn_val.get() == 1:
-                self.master.change(ThirdFrame)
-            elif rbtn_val.get() == 2:
-                self.master.change(FourthFrame)
-            elif rbtn_val.get() == 3:
-                self.master.change(FifthFrame)
-            else:
-                self.status.config(text="error inesperado")
-
-        rbtn_val = tk.IntVar()
-        rbtn_val.set(1)
-        lbl = tk.Label(self, text='Escoja la configuración a realizar', font=('', 12))
-        r_btn1 = tk.Radiobutton(self, text='P', padx=20, variable=rbtn_val, value=1, font=('', 12))
-        r_btn2 = tk.Radiobutton(self, text='CE', padx=20, variable=rbtn_val, value=2, font=('', 12))
-        r_btn3 = tk.Radiobutton(self, text='PE', padx=20, variable=rbtn_val, value=3, font=('', 12))
-        lbl.pack()
-        r_btn1.pack()
-        r_btn2.pack()
-        r_btn3.pack()
-        btn_continuar = tk.Button(self, text="Continuar", command=configuration, font=('', 12))
-        btn_log_out = tk.Button(self, text="Cerrar Sesiòn", command=lambda: self.master.change(FirstFrame), font=('', 12))
-        btn_continuar.pack()
-        btn_log_out.pack()
 
 
 class ThirdFrame(tk.Frame):
@@ -205,7 +170,7 @@ class ThirdFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
         master.title("Configuracion P")
         master.geometry("300x300")
-        btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(SecondFrame))
+        btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(ConfigFrame))
         btn_ret.pack()
 
 
@@ -215,7 +180,7 @@ class FourthFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
         master.title("Configuracion CE")
         master.geometry("300x300")
-        btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(SecondFrame))
+        btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(ConfigFrame))
         btn_ret.pack()
 
 
@@ -225,7 +190,7 @@ class FifthFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
         master.title("Configuracion PE")
         master.geometry("300x300")
-        btn_ret = tk.Button(self, text="atràs", command=lambda: self.master.change(SecondFrame))
+        btn_ret = tk.Button(self, text="atràs", command=lambda: self.master.change(ConfigFrame))
         btn_ret.pack()
 
 
