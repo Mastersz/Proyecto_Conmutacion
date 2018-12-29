@@ -16,6 +16,7 @@ c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL ,password TEX
 db.commit()
 db.close()
 
+rbtn_value=0
 class Mainframe(tk.Tk):
     def __init__(self):
         "Inicia la ventana principal y la hace visible"
@@ -93,9 +94,20 @@ class ConfigFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
 
         master.title("Conectar por SSH")
-        master.geometry("300x200")
+        master.geometry("300x300")
         self.status = tk.Label(self, fg='red')
         self.status.pack()
+        rbtn_val = tk.IntVar()
+        rbtn_val.set(1)
+        lbl = tk.Label(self, text='Escoja la configuración a realizar', font=('', 12))
+        r_btn1 = tk.Radiobutton(self, text='P', padx=20, variable=rbtn_val, value=1, font=('', 12))
+        r_btn2 = tk.Radiobutton(self, text='CE', padx=20, variable=rbtn_val, value=2, font=('', 12))
+        r_btn3 = tk.Radiobutton(self, text='PE', padx=20, variable=rbtn_val, value=3, font=('', 12))
+        lbl.pack()
+        r_btn1.pack()
+        r_btn2.pack()
+        r_btn3.pack()
+        rbtn_value=rbtn_val.get()
         ip = tk.Label(self, text='IP', font=('', 10))
         ip.pack()
         self.ip = tk.Entry(self)
