@@ -8,6 +8,7 @@ from tkinter import messagebox as ms
 import tkinter as tk
 import tkinter.messagebox as tm
 import sqlite3
+from datetime import datetime
 # make database and users (if not exists already) table at programme start up
 with sqlite3.connect('DataBase.db') as db:
     c = db.cursor()
@@ -135,6 +136,7 @@ class ConfigFrame(tk.Frame):
             Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
             Si falta informaciòn retorna el respectivo mensaje con la informaciòn que falte
         '''
+        time = datetime.now()
         with sqlite3.connect('DataBase.db') as db:
             c = db.cursor()
 
@@ -142,13 +144,20 @@ class ConfigFrame(tk.Frame):
         find_user = ('SELECT * FROM user WHERE username = ? ')
         c.execute(find_user, [(self.usr.get())])
         result = c.fetchall()
+
+        find_dispIP= ('SELECT dispositivo_id FROM dispositivo WHERE direccion_ip= ? ')
+        c.execute(find_dispIP, [(self.ip.get())])
+        dispIP= c.fetchall()
         if btnS== 0 or self.usr.get() == '' or self.pwd.get() == ''or self.ip.get() == '':
             tm.showerror('Oops!','Falta información, inténtelo de nuevo.')
-        elif result:
+            evento=2
+        elif btnS!= 0 and result:
             find_pwd = ('SELECT * FROM user WHERE password = ? ')
             c.execute(find_pwd, [(self.pwd.get())])
             pwd_correcto = c.fetchall()
+            print(pwd_correcto)
             if pwd_correcto:
+                evento = 1
                 if btnS== 1:
                     self.master.change(ThirdFrame)
                 elif btnS == 2:
@@ -156,10 +165,16 @@ class ConfigFrame(tk.Frame):
                 elif btnS == 3:
                     self.master.change(FifthFrame)
             else:
+                evento=3
                 ms.showerror('Oops!', 'Contraseña incorrecta.')
         else:
+            evento = 0
             ms.showerror('Oops!', 'Nombre de usuario incorrecto.')
-        # Frame Packing Methords
+        inf = (self.usr.get(), time, dispIP[0][0], evento)
+        insert=''' INSERT INTO historial(usuario,hora_fecha,dispositivo,evento)
+              VALUES(?,?,?,?) '''
+        c.execute(insert, inf)
+        db.commit()
 
 
 
