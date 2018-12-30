@@ -41,6 +41,7 @@ class FirstFrame(tk.Frame):
         master.geometry("300x200")
         self.status = tk.Label(self, fg='red')
         self.status.pack()
+        "Ingreso de la información del usuario para realizar el login"
         usr = tk.Label(self, text='Enter username', font=('', 15))
         usr.pack()
         self.usr = tk.Entry(self)
@@ -52,32 +53,35 @@ class FirstFrame(tk.Frame):
         self.pwd.pack()
         self.pwd.focus()
         self.pwd.bind('<Return>', self.check)
-        btn = tk.Button(self, text="Login", font=('', 15), command=self.check)
-
+        btn = tk.Button(self, text="Login", font=('', 15), command=self.check)# Al presionar login se activa la función check
         btn.pack()
 
     def check(self, event=None):
         '''Chequea los eventos del botòn Login
             Si los datos son correctos retorna Bienvenido (Nombre del usuario) y la siguiente ventana
-            Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
+            Si la información de contraseña o usuario es incorrecta retorna el mensaje del contraseña o usuario incorrecto
             Si falta informaciòn retorna el respectivo mensaje con la informaciòn que falte
         '''
+
+        # Conectar a la base de datos DataBase.db
         with sqlite3.connect('DataBase.db') as db:
             c = db.cursor()
-
-        # Find user If there is any take proper action
+        # Buscar nombre de usuario en la base de datos
         find_user = ('SELECT * FROM user WHERE username = ? ')
         c.execute(find_user, [(self.usr.get()).strip(' ')])
         result = c.fetchall()
+        # Se valida cada campo proporcionado, y se muestra el mensaje respectivo
         if self.usr.get() == '' and self.pwd.get() == '':
             tm.showerror("Login error", "Ingrese información")
         elif self.usr.get() == '':
             tm.showerror("Login error", "Usuario faltante")
         elif self.pwd.get() == '':
             tm.showerror("Login error", "Contraseña faltante")
+        # En el caso de que se encuentre el usuario en la base de datos se procede a comprobar la contraseña proporcionada
         elif result:
-            find_pwd = ('SELECT * FROM user WHERE password = ? ')
-            c.execute(find_pwd, [(self.pwd.get())])
+            # Buscar contraseña del usuario proporcionado en la base de datos
+            find_pwd = ('SELECT * FROM user WHERE username = ? and password = ? ' )
+            c.execute(find_pwd, [(self.usr.get()),(self.pwd.get())])
             pwd_correcto = c.fetchall()
             if pwd_correcto:
                 tm.showinfo("Login info", self.usr.get() + '\n Bienvenid@')
@@ -86,7 +90,7 @@ class FirstFrame(tk.Frame):
                 ms.showerror('Oops!', 'Contraseña incorrecta.')
         else:
             ms.showerror('Oops!', 'Nombre de usuario incorrecto.')
-        # Frame Packing Methords
+
 
 class ConfigFrame(tk.Frame):
 
@@ -98,6 +102,7 @@ class ConfigFrame(tk.Frame):
         master.geometry("300x300")
         self.status = tk.Label(self, fg='red')
         self.status.pack()
+        "Ingreso de la información del usuario para realizar la conexión"
         rbtn_val = tk.IntVar()
         rbtn_val.set(1)
         lbl = tk.Label(self, text='Escoja la configuración a realizar', font=('', 12))
@@ -124,14 +129,19 @@ class ConfigFrame(tk.Frame):
         self.pwd = tk.Entry(self, show="*")
         self.pwd.pack()
         self.pwd.focus()
-        btn = tk.Button(self, text="Conectar", font=('', 10), command=lambda: self.check2(btnS=rbtn_value))
+        btn = tk.Button(self, text="Conectar", font=('', 10), command=lambda: self.connecSSH(btnS=rbtn_value))# Al presionar Conectar se activa la función connecSSH
         btn.pack()
 
-    def check2(self, event=None,btnS=0):
-        '''Chequea los eventos del botòn Login
-            Si los datos son correctos retorna Bienvenido (Nombre del usuario) y la siguiente ventana
-            Si la contraseña es incorrecta retorna el mensaje Contraseña incorrecta
-            Si falta informaciòn retorna el respectivo mensaje con la informaciòn que falte
+    def connecSSH(self, event=None,btnS=0):
+        '''Chequea los eventos del botòn conectar
+            evento 0: nombre de usuario incorrecto
+            evento 1: sesión correcta
+            evento 2: falta información
+            evento 3: clave incorrecta
+            evento 4: falla de conexión remota
+            evento 5: error de conexión
+            evento 6: falta dirección ip (se lo analiza aparte para evitar el IndexError)
+        Una vez chequeado el evento se procede a registrar la información ingresada en el historial de la base de datos
         '''
         time = datetime.now()
         with sqlite3.connect('DataBase.db') as db:
