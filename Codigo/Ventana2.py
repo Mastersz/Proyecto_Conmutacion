@@ -67,9 +67,8 @@ class FirstFrame(tk.Frame):
 
         # Find user If there is any take proper action
         find_user = ('SELECT * FROM user WHERE username = ? ')
-        c.execute(find_user, [(self.usr.get())])
+        c.execute(find_user, [(self.usr.get()).strip(' ')])
         result = c.fetchall()
-
         if self.usr.get() == '' and self.pwd.get() == '':
             tm.showerror("Login error", "Ingrese información")
         elif self.usr.get() == '':
@@ -125,9 +124,7 @@ class ConfigFrame(tk.Frame):
         self.pwd = tk.Entry(self, show="*")
         self.pwd.pack()
         self.pwd.focus()
-        self.pwd.bind('<Return>', self.check2)
         btn = tk.Button(self, text="Conectar", font=('', 10), command=lambda: self.check2(btnS=rbtn_value))
-
         btn.pack()
 
     def check2(self, event=None,btnS=0):
@@ -142,7 +139,7 @@ class ConfigFrame(tk.Frame):
 
         # Find user If there is any take proper action
         find_user = ('SELECT * FROM user WHERE username = ? ')
-        c.execute(find_user, [(self.usr.get())])
+        c.execute(find_user, [(self.usr.get()).strip(' ')])
         result = c.fetchall()
 
         find_dispIP= ('SELECT dispositivo_id FROM dispositivo WHERE direccion_ip= ? ')
@@ -170,12 +167,21 @@ class ConfigFrame(tk.Frame):
         else:
             evento = 0
             ms.showerror('Oops!', 'Nombre de usuario incorrecto.')
-        inf = (self.usr.get(), time, dispIP[0][0], evento)
-        insert=''' INSERT INTO historial(usuario,hora_fecha,dispositivo,evento)
-              VALUES(?,?,?,?) '''
-        c.execute(insert, inf)
-        db.commit()
 
+        try:
+            inf = (self.usr.get(), time, dispIP[0][0], evento)
+            insert = ''' INSERT INTO historial(usuario,hora_fecha,dispositivo,evento)
+                                      VALUES(?,?,?,?) '''
+            c.execute(insert, inf)
+            db.commit()
+        except:
+            evento = 6
+            ms.showerror('Oops!','Ip necesaria para realizar conexión.')
+            inf2 = (self.usr.get(),time, evento)
+            insert2 = ''' INSERT INTO historial(usuario,hora_fecha,evento)
+                                                  VALUES(?,?,?) '''
+            c.execute(insert2, inf2)
+            db.commit()
 
 
 
