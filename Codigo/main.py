@@ -17,6 +17,8 @@ with sqlite3.connect('DataBase.db') as db:
 c.execute('CREATE TABLE IF NOT EXISTS user (username TEXT NOT NULL ,password TEX NOT NULL);')
 db.commit()
 db.close()
+ssh=paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 rbtn_value=0
 class Mainframe(tk.Tk):
@@ -116,10 +118,25 @@ class FirstFrame(tk.Frame):
                 if dispositivo_correcto:
                     evento = 1
                     if tipoDispositivo == "p":
+                        ssh.connect('192.168.1.10', port=22, username=self.usr.get(), password=self.pwd.get())
+                        stdin, stdout, stderr = ssh.exec_command('show ip interface brief')
+                        output = stdout.readlines()
+                        type(output)
+                        print('\n'.join(output))
                         self.master.change(ThirdFrame)
                     elif tipoDispositivo == "ce":
+                        ssh.connect('192.168.1.10', port=22, username=self.usr.get(), password=self.pwd.get())
+                        stdin, stdout, stderr = ssh.exec_command('show ip interface brief')
+                        output = stdout.readlines()
+                        type(output)
+                        print('\n'.join(output))
                         self.master.change(FourthFrame)
                     elif tipoDispositivo == "pe":
+                        ssh.connect('192.168.1.10', port=22, username=self.usr.get(), password=self.pwd.get())
+                        stdin, stdout, stderr = ssh.exec_command('show ip interface brief')
+                        output = stdout.readlines()
+                        type(output)
+                        print('\n'.join(output))
                         self.master.change(FifthFrame)
                 else:
                     evento = 7
@@ -187,32 +204,11 @@ class FourthFrame(tk.Frame):
         tk.Frame.__init__(self, master, **kwargs)
         master.title("Configuracion CE")
         master.geometry("300x300")
-        # el puerto SSH que use nuestro servidor
-        ssh_puerto = 22
-        # el comando que vamos a ejecutar en el servidor
-        comando = 'ls'
-        # Conectamos al servidor
-        conexion = paramiko.Transport((self.ip.get(), ssh_puerto))
-        conexion.connect(self.usr.get(), self.pwd.get())
-        # Abrimos una sesión en el servidor
-        canal = conexion.open_session()
-        # Ejecutamos el comando 'ls' para ver el listado de archivos y directorios
-        canal.exec_command(comando)
-        salida = canal.makefile('rb', -1).readlines()
-        if salida:
-            # Si ha ido todo bien mostramos el listado de directorios
-            usr = tk.Label(self, salida, font=('', 10))
-            usr.pack()
-            btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(FirstFrame))
-            btn_ret.pack()
-        else:
-            # Si se ha producido algún error lo mostramos
-            error = canal.makefile_stderr('rb', -1).readlines()
-            usr = tk.Label(self, error, font=('', 10))
-            usr.pack()
-            btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(FirstFrame))
-            btn_ret.pack()
-        conexion.close()
+        usr = tk.Label(self, text="configuracion CE", font=('', 10))
+        usr.pack()
+        btn_ret = tk.Button(self, text="atras", command=lambda: self.master.change(FirstFrame))
+        btn_ret.pack()
+
 
 
 class FifthFrame(tk.Frame):
