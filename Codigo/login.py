@@ -28,6 +28,39 @@ class Ui_Dialog(object):
         self.ui.setupUi(self.localWindow)
         self.localWindow.show()
 
+
+    '''
+    Buscar en la base de datos
+    Necesita la conexion con base de datos, tabla a buscar, y si es necesario una condicion.
+    Si la condicion no se especifica, regresara todos los campos.
+    Regresa el resutado de la busqueda en forma de lista 
+    '''
+
+    def buscar_bd(bd, tabla, condicion='1=1'):
+        cursor = bd.cursor();
+        sentencia = "SELECT * FROM " + tabla + " WHERE " + condicion + ";"
+        cursor.execute(sentencia)
+        resultado = cursor.fetchall()
+
+    '''
+    Verificar contrasenia de usuario
+    Utlizamos la funcion buscar_bd() para buscar al usuario.
+    Si el resultado es 0, entonces no se encuentra el usuario en la base de datos
+    En caso de que exista, se verifica si las contrasenias son iguales.
+    '''
+
+    def verificarCredenciales(bd, usuario, contrasenia):
+        print("Verificar credenciales ! ")
+        resultado = bd.buscar_bd(bd, "user", "username='" + usuario + "'")
+        if (len(resultado) == 0):
+            return "El usuario no existe"
+        else:
+            usuario = resultado[0]
+            if (str(usuario[3]) == contrasenia):
+                return "Inicio de sesion exitoso"
+            else:
+                return "La contrasenia esta incorrecta"
+
     """Esta función verifica los datos ingresados.
      Realiza conexión con la base de datos bajo sqlite
     y una vez que los datos estén validados 
@@ -35,11 +68,13 @@ class Ui_Dialog(object):
     Por defecto en esta versión del aplicativo automáticamente
      entra a showRemoteWindow()"""
     def ingresar(self):
-        username = self.txt_usuario.text()
+        username = (self.txt_usuario.text()).strip(' ')
         password = self.txt_contrasena.text()
-        connection = sqlite3.connect("login.db")
-        result = connection.execute("SELECT * FROM USERS WHERE "
-                                    "USERNAME = ? AND CONTRASENA = ?", (username, password))
+        print("conectar ! ")
+        connection = sqlite3.connect("DataBase.db")
+        print("verificar ! ")
+        result = self.verificarCredenciales(connection, username, password)
+        print("Resultado ! ")
         if len(result.fetchall()) > 0:
             print("Usuario encontrado ! ")
             loginWindow.close()
@@ -52,10 +87,6 @@ class Ui_Dialog(object):
             ctypes.windll.user32.MessageBoxW(0, "Credenciales invalidas",
                                              "Error", 0)
         connection.close()
-
-
-
-
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
