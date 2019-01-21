@@ -74,9 +74,6 @@ class Ui_Dialog(object):
         print(registro)
 
 
-
-
-
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.setEnabled(True)
