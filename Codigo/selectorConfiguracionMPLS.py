@@ -18,15 +18,10 @@ import paramiko
 import sqlite3
 
 class Ui_SelectorConfiguracionMPLS(object):
-    def historial(dispID):
+    disp  = 0
+    def historial(dispID, username, time, evento):
         bd = sqlite3.connect("DataBase.db")
-        file = open("historial.txt", "r")
-        for line in file:
-            campos = line.split(",")
-            username = campos[0]
-            time = campos[1]
-            evento = campos[2]
-        inf = (username, time, dispID, evento)
+        inf = (username, time, dispID, str(evento))
         registro = historial_bd(bd, inf)
         print(registro)
 
@@ -45,35 +40,77 @@ class Ui_SelectorConfiguracionMPLS(object):
             ctypes.windll.user32.MessageBoxW(0, "Configuración realizada con éxito",
                                              "Done", 0)
             dispID=1
+            self.disp = dispID
             self.historial(dispID)
         except:
             evento=5
+            arch = open("temp.txt", "r")
+            nombre = ""
+            time = ""
+            for linea in arch:
+                linea = linea.split(",")
+                nombre = linea[0]
+                time = linea[1]
+            arch.close()
+
             file = open("historial.txt", "a")
-            file.write(evento)
-            ctypes.windll.user32.MessageBoxW(0, "Error de conexión",
+            file.write(nombre + "," + time + "," + str(evento) + "\n")
+            ctypes.windll.user32.MessageBoxW(0, "Error de conexión P",
                                              "Done", 0)
 
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showConfigurarPE(self,Form, remote_conn):
-        bd = sqlite3.connect("DataBase.db")
-        dispID = 2
-        self.historial(dispID)
-        self.configurarPE2 = QtWidgets.QDialog()
-        self.ui = Ui_ConfigurarPE2()
-        self.ui.setupUi(self.configurarPE2, remote_conn)
-        self.configurarPE2.show()
-        Form.close()
+        try:
+            self.configurarPE2 = QtWidgets.QDialog()
+            self.ui = Ui_ConfigurarPE2()
+            self.ui.setupUi(self.configurarPE2, remote_conn)
+            self.configurarPE2.show()
+            Form.close()
 
+            dispID = 2
+            self.disp = dispID
+            self.historial(dispID)
+        except:
+            evento = 5
+            arch = open("temp.txt", "r")
+            nombre = ""
+            time = ""
+            for linea in arch:
+                linea = linea.split(",")
+                nombre = linea[0]
+                time = linea[1]
+            arch.close()
+
+            file = open("historial.txt", "a")
+            file.write(nombre + "," + time + "," + str(evento) + "\n")
+            ctypes.windll.user32.MessageBoxW(0, "Error de conexión PE",
+                                             "Done", 0)
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showConfigurarCE(self,Form, remote_conn):
-        bd = sqlite3.connect("DataBase.db")
-        dispID = 3
-        self.historial(dispID)
-        self.configurarCE = QtWidgets.QDialog()
-        self.ui = Ui_ConfigurarCE()
-        self.ui.setupUi(self.configurarCE, remote_conn)
-        self.configurarCE.show()
-        Form.close()
+        try:
+            self.configurarCE = QtWidgets.QDialog()
+            self.ui = Ui_ConfigurarCE()
+            self.ui.setupUi(self.configurarCE, remote_conn)
+            self.configurarCE.show()
+            Form.close()
+            dispID = 3
+            self.disp = dispID
+            self.historial(dispID)
+        except:
+            evento = 5
+            arch = open("temp.txt", "r")
+            nombre = ""
+            time = ""
+            for linea in arch:
+                linea = linea.split(",")
+                nombre = linea[0]
+                time = linea[1]
+            arch.close()
+
+            file = open("historial.txt", "a")
+            file.write(nombre + "," + time + "," + str(evento) + "\n")
+            ctypes.windll.user32.MessageBoxW(0, "Error de conexión CE",
+                                             "Done", 0)
 
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showSelectorLocal(self, Form, remote_conn):
@@ -112,6 +149,7 @@ class Ui_SelectorConfiguracionMPLS(object):
             nombre = linea[0]
             time = linea[1]
         arch.close()
+        self.historial(self.disp, nombre,time, evento)
 
         file = open("historial.txt", "a")
         file.write(nombre + "," + time + "," + str(evento)+"\n")
