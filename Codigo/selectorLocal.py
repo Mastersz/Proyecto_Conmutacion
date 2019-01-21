@@ -53,6 +53,7 @@ class Ui_SelectorLocal(object):
         r=remote_conn
 
         #######################################################################
+
         self.btn_configuracionBasica.clicked.connect(lambda : self.showConfiguracionBasicaWindow(SelectorLocal,remote_conn))
         self.btn_configuracionMPLS.clicked.connect(lambda: self.showSelectorMPLS(SelectorLocal, remote_conn))
         self.btn_salir.clicked.connect(lambda: self.salir(SelectorLocal))

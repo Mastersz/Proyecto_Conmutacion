@@ -23,7 +23,6 @@ class Ui_Remote(object):
         self.selectorLocal.show()
 
 
-
     def setupUi(self, Form):
 
         Form.setObjectName("Form")
@@ -105,8 +104,7 @@ class Ui_Remote(object):
         self.label_6.setText(_translate("Form", "Contraseña"))
 
 
-    """Obtiene los datos de los campos de texto de ip ingresados por el cliente, verifica que son campos con datos numéricos
-    y que los mismos sean campos coherentes con el formato de dirección ipv4. Si todos los campos están correctos intenta
+    """Obtiene los datos de los campos de texto de ip ingresados por el cliente, Si todos los campos están correctos intenta
     realizar la conexión por medio de ssh. Si ocurre algún problema muestra mensaje popup informando en que campo en específico
     existe una inconsistencia."""
     def verificarIP(self, Form):
@@ -131,6 +129,18 @@ class Ui_Remote(object):
                             print("4")
                             Form.close()
                         except Exception :
+                            evento=4
+                            arch = open("temp.txt", "r")
+                            nombre=""
+                            time=""
+                            for linea in arch:
+                                linea = linea.split(",")
+                                nombre = linea[0]
+                                time = linea[1]
+                            arch.close()
+
+                            file = open("historial.txt", "a")
+                            file.write(nombre +","+ time +","+ str(evento)+"\n")
                             ctypes.windll.user32.MessageBoxW(0, "No se pudo establecer la conexion, verificar ip o credenciales.", "Error", 0)
 
 

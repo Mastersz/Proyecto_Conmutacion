@@ -35,7 +35,19 @@ def verificarCredenciales(bd, usuario, contrasenia):
             return 3
 
 '''
-Escribir en Base de Datos
+Escribir en Base de Datos los logins erróneos
+Necesita la conexion con base de datos, tabla a escribir 
+'''
+def historial_error(bd,inf):
+    c = bd.cursor()
+    insert = ''' INSERT INTO historial(usuario,hora_fecha,evento)
+	                                              VALUES(?,?,?) '''
+    c.execute(insert, inf)
+    bd.commit()
+    return "Regristro realizado"
+
+'''
+Escribir en Base de Datos los logins correctos
 Necesita la conexion con base de datos, tabla a escribir 
 '''
 def historial_bd(bd,inf):

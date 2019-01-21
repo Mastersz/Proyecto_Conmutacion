@@ -10,7 +10,7 @@ from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from local import Ui_local
 from remote import Ui_Remote
-from Codigo.funcionesDB import verificarCredenciales, historial_bd
+from Codigo.funcionesDB import verificarCredenciales, historial_error
 
 
 class Ui_Dialog(object):
@@ -41,7 +41,6 @@ class Ui_Dialog(object):
     Por defecto en esta versión del aplicativo automáticamente
      entra a showRemoteWindow()"""
     def ingresar(self):
-        dispID=1
         time = datetime.now()
         username = (self.txt_usuario.text()).strip(' ')
         password = self.txt_contrasena.text()
@@ -69,9 +68,24 @@ class Ui_Dialog(object):
             else:
                 print("local")
                 self.showlocalWindow()
-        inf = (username, time , dispID, evento)
-        registro=historial_bd(bd, inf)
-        print(registro)
+        if evento!=1:
+            print("abriendo archivo....")
+            file=open("historial.txt","a")
+            if(username == ''):
+                username='Null'
+
+            file.write(str(username) + "," + str(time) + "," + str(evento) + "\n")
+            file.close()
+
+            inf = (username, time, evento)
+            historial_error(bd, inf)
+
+        else:
+            print("abriendo archivo temporal....")
+            file = open("temp.txt", "w")
+            file.write(str(username) + "," + str(time))
+            file.close()
+
 
 
     def setupUi(self, Dialog):
