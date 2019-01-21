@@ -4,10 +4,13 @@
 # Created by: PyQt5 UI code generator 5.9.2
 import ctypes
 import sqlite3
+import tkinter.messagebox as tm
+from tkinter import messagebox as ms
+from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
 from local import Ui_local
 from remote import Ui_Remote
-from Codigo.funcionesDB import verificarCredenciales
+from Codigo.funcionesDB import verificarCredenciales, historial_bd
 
 
 class Ui_Dialog(object):
@@ -38,25 +41,41 @@ class Ui_Dialog(object):
     Por defecto en esta versión del aplicativo automáticamente
      entra a showRemoteWindow()"""
     def ingresar(self):
+        dispID=1
+        time = datetime.now()
         username = (self.txt_usuario.text()).strip(' ')
         password = self.txt_contrasena.text()
         print("conectar ! ")
         bd = sqlite3.connect("DataBase.db")
         print(bd)
         print("verificar ! ")
-        result = verificarCredenciales(bd, username, password)
-        print(result)
-        if len(result.fetchall()) > 0:
-            print("Usuario encontrado ! ")
+        evento= verificarCredenciales(bd, username, password)
+        print(evento)
+        if evento==2:
+            ctypes.windll.user32.MessageBoxW(0, "Falta información, inténtelo de nuevo.",
+                                             "Error", 0)
+        elif evento==0:
+            ctypes.windll.user32.MessageBoxW(0, "Nombre de usuario incorrecto.",
+                                             "Error", 0)
+        elif evento==3:
+            ctypes.windll.user32.MessageBoxW(0, "Contraseña incorrecta.",
+                                             "Error", 0)                        
+        elif evento==1:
             loginWindow.close()
+            print("Credenciales correctas ! ")
             if self.chk_remote.checkState():
+                print("remoto")
                 self.showRemoteWindow()
             else:
+                print("local")
                 self.showlocalWindow()
-        else:
-            print("Usuario no encontrado !")
-            ctypes.windll.user32.MessageBoxW(0, "Credenciales invalidas",
-                                             "Error", 0)
+        inf = (username, time , dispID, evento)
+        registro=historial_bd(bd, inf)
+        print(registro)
+
+
+
+
 
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
