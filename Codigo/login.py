@@ -35,7 +35,8 @@ class Ui_Dialog(object):
 
 
     """Esta función verifica los datos ingresados.
-     Realiza conexión con la base de datos bajo sqlite
+     Realiza conexión co-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     º
+     n la base de datos bajo sqlite
     y una vez que los datos estén validados 
     muestra la pantalla correspondiente al tipo de conexión.
     Por defecto en esta versión del aplicativo automáticamente
@@ -46,10 +47,13 @@ class Ui_Dialog(object):
         password = self.txt_contrasena.text()
         print("conectar ! ")
         bd = sqlite3.connect("DataBase.db")
+
         print(bd)
         print("verificar ! ")
+
         evento= verificarCredenciales(bd, username, password)
         print(evento)
+
         if evento==2:
             ctypes.windll.user32.MessageBoxW(0, "Falta información, inténtelo de nuevo.",
                                              "Error", 0)

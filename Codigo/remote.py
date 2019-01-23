@@ -11,7 +11,7 @@ import string
 from PyQt5 import QtCore, QtWidgets
 
 import selectorLocal
-from funciones2 import *
+from Codigo.funciones2 import *
 
 
 class Ui_Remote(object):
@@ -117,9 +117,9 @@ class Ui_Remote(object):
                         ip = self.txt_1.text() + "." + self.txt_2.text() + "." + self.txt_3.text() + "." + self.txt_4.text()
                         print(
                             self.txt_1.text() + "." + self.txt_2.text() + "." + self.txt_3.text() + "." + self.txt_4.text()+" "+self.txt_usuario.text()+" "+self.txt_contrasena.text())
-                        try:
+                        """try:
                             remote_conn_pre, remote_conn = login_ssh(ip, self.txt_usuario.text(),self.txt_contrasena.text())
-
+                        
                             print("1")
                             disable_paging(remote_conn)
                             print("2")
@@ -129,21 +129,33 @@ class Ui_Remote(object):
                             print("4")
                             Form.close()
                         except Exception :
-                            evento=4
-                            arch = open("temp.txt", "r")
-                            nombre=""
-                            time=""
-                            for linea in arch:
-                                linea = linea.split(",")
-                                nombre = linea[0]
-                                time = linea[1]
-                            arch.close()
+                        evento=4
+                        arch = open("temp.txt", "r")
+                        nombre=""
+                        time=""
+                        for linea in arch:
+                            linea = linea.split(",")
+                            nombre = str(linea[0])
+                            time = str(linea[1])
+                        arch.close()
 
-                            file = open("historial.txt", "a")
-                            file.write(nombre +","+ time +","+ str(evento)+"\n")
+                        file = open("historial.txt", "a")
+                        file.write(nombre +","+ time +","+ str(evento)+"\n")
+                        ctypes.windll.user32.MessageBoxW(0, "No se pudo establecer la conexion, verificar ip o credenciales.", "Error", 0)"""
+                        try:
+
+                            remote_conn_pre, remote_conn = login_ssh(ip, self.txt_usuario.text(),self.txt_contrasena.text())
+                            print("verificando ip")
+                            print("1")
+                            disable_paging(remote_conn)
+                            print("2")
+                            back_home(remote_conn)
+                            print("3")
+                            self.showSelectorLocal(remote_conn)
+                            print("4")
+                            Form.close()
+                        except Exception :
                             ctypes.windll.user32.MessageBoxW(0, "No se pudo establecer la conexion, verificar ip o credenciales.", "Error", 0)
-
-
                     else:
                         ctypes.windll.user32.MessageBoxW(0, "Error en el cuarto octeto", "Error", 1)
                 else:

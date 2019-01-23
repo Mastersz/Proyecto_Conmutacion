@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'selectorLocal.ui'
-#
-# Created by: PyQt5 UI code generator 5.9.2
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import configuracionBasica
 import funciones2
@@ -37,6 +29,7 @@ class Ui_SelectorLocal(object):
 
 
     def setupUi(self, SelectorLocal,remote_conn):
+        print("setupU")
         SelectorLocal.setObjectName("SelectorLocal")
         SelectorLocal.resize(640, 200)
         self.btn_configuracionBasica = QtWidgets.QPushButton(SelectorLocal)
@@ -53,7 +46,6 @@ class Ui_SelectorLocal(object):
         r=remote_conn
 
         #######################################################################
-
         self.btn_configuracionBasica.clicked.connect(lambda : self.showConfiguracionBasicaWindow(SelectorLocal,remote_conn))
         self.btn_configuracionMPLS.clicked.connect(lambda: self.showSelectorMPLS(SelectorLocal, remote_conn))
         self.btn_salir.clicked.connect(lambda: self.salir(SelectorLocal))

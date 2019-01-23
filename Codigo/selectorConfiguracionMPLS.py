@@ -8,12 +8,11 @@
 import ctypes
 from Codigo.funcionesDB import historial_bd
 from PyQt5 import QtCore, QtGui, QtWidgets
-import selectorLocal
-from ConfigurarPE2 import Ui_ConfigurarPE2
-from configurarCE import Ui_ConfigurarCE
-import selectorLocal
-import funciones2
-import funciones_com
+import Codigo.selectorLocal
+from Codigo.ConfigurarPE2 import Ui_ConfigurarPE2
+from Codigo.configurarCE import Ui_ConfigurarCE
+import Codigo.funciones2
+import Codigo.funciones_com
 import paramiko
 import sqlite3
 
@@ -21,29 +20,28 @@ class Ui_SelectorConfiguracionMPLS(object):
     disp  = 0
     def historial(dispID, username, time, evento):
         bd = sqlite3.connect("DataBase.db")
-        inf = (username, time, dispID, str(evento))
+        inf = (str(username), time, dispID, str(evento))
         registro = historial_bd(bd, inf)
         print(registro)
 
     """Envía la configuración al enrutador obteniendo los datos de las funciones del archivo funciones2.py (ver funciones2.py)"""
     def configurarP(self, remote_conn):
-        try:
+        #try:
             print("####################CODIGO PARA CONFIGURAR P")
             if (type(remote_conn) is paramiko.channel.Channel):
-                funciones2.config_OSPF(remote_conn)
-                funciones2.save_ID(remote_conn)
+                Codigo.funciones2.config_OSPF(remote_conn)
+                Codigo.funciones2.save_ID(remote_conn)
             else:
-                funciones_com.config_OSPF(remote_conn)
+                Codigo.funciones_com.config_OSPF(remote_conn)
             print("1")
-            funciones2.config_cef_mpls_ldp(remote_conn)
+            Codigo.funciones2.config_cef_mpls_ldp(remote_conn)
             print("2")
             ctypes.windll.user32.MessageBoxW(0, "Configuración realizada con éxito",
                                              "Done", 0)
+
             dispID=1
             self.disp = dispID
-            self.historial(dispID)
-        except:
-            evento=5
+            evento=1
             arch = open("temp.txt", "r")
             nombre = ""
             time = ""
@@ -55,8 +53,25 @@ class Ui_SelectorConfiguracionMPLS(object):
 
             file = open("historial.txt", "a")
             file.write(nombre + "," + time + "," + str(evento) + "\n")
-            ctypes.windll.user32.MessageBoxW(0, "Error de conexión P",
-                                             "Done", 0)
+            file.close()
+            print(nombre, time)
+            #self.historial(dispID,nombre, time, evento)
+        #except:
+    """ evento=5
+        arch = open("temp.txt", "r")
+        nombre = ""
+        time = ""
+        for linea in arch:
+            linea = linea.split(",")
+            nombre = linea[0]
+            time = linea[1]
+        arch.close()
+
+        file = open("historial.txt", "a")
+        file.write(nombre + "," + time + "," + str(evento) + "\n")
+        ctypes.windll.user32.MessageBoxW(0, "Error de conexión P",
+                                         "Done", 0)"""
+
 
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showConfigurarPE(self,Form, remote_conn):
@@ -69,7 +84,21 @@ class Ui_SelectorConfiguracionMPLS(object):
 
             dispID = 2
             self.disp = dispID
-            self.historial(dispID)
+            evento = 1
+            arch = open("temp.txt", "r")
+            nombre = ""
+            time = ""
+            for linea in arch:
+                linea = linea.split(",")
+                nombre = linea[0]
+                time = linea[1]
+            arch.close()
+
+            file = open("historial.txt", "a")
+            file.write(nombre + "," + time + "," + str(evento) + "\n")
+            file.close()
+            print(nombre, time)
+            #self.historial(dispID)
         except:
             evento = 5
             arch = open("temp.txt", "r")
@@ -87,7 +116,7 @@ class Ui_SelectorConfiguracionMPLS(object):
                                              "Done", 0)
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showConfigurarCE(self,Form, remote_conn):
-        try:
+        #try:
             self.configurarCE = QtWidgets.QDialog()
             self.ui = Ui_ConfigurarCE()
             self.ui.setupUi(self.configurarCE, remote_conn)
@@ -95,9 +124,23 @@ class Ui_SelectorConfiguracionMPLS(object):
             Form.close()
             dispID = 3
             self.disp = dispID
-            self.historial(dispID)
-        except:
-            evento = 5
+            evento = 1
+            arch = open("temp.txt", "r")
+            nombre = ""
+            time = ""
+            for linea in arch:
+                linea = linea.split(",")
+                nombre = linea[0]
+                time = linea[1]
+            arch.close()
+
+            file = open("historial.txt", "a")
+            file.write(nombre + "," + time + "," + str(evento) + "\n")
+            file.close()
+            print(nombre, time)
+            #self.historial(dispID)
+        #except:
+            """evento = 5
             arch = open("temp.txt", "r")
             nombre = ""
             time = ""
@@ -110,15 +153,28 @@ class Ui_SelectorConfiguracionMPLS(object):
             file = open("historial.txt", "a")
             file.write(nombre + "," + time + "," + str(evento) + "\n")
             ctypes.windll.user32.MessageBoxW(0, "Error de conexión CE",
-                                             "Done", 0)
+                                             "Done", 0)"""
 
     """Esta función permite la navegación entre ventanas, creando la instancia de la ventana y mostrándola en pantalla."""
     def showSelectorLocal(self, Form, remote_conn):
         self.selectorLocal = QtWidgets.QDialog()
-        self.ui = selectorLocal.Ui_SelectorLocal()
+        self.ui = Codigo.selectorLocal.Ui_SelectorLocal()
         self.ui.setupUi(self.selectorLocal, remote_conn)
         self.selectorLocal.show()
         Form.close()
+        evento = 1
+        arch = open("temp.txt", "r")
+        nombre = ""
+        time = ""
+        for linea in arch:
+            linea = linea.split(",")
+            nombre = linea[0]
+            time = linea[1]
+        arch.close()
+        self.historial(self.disp, nombre, time, evento)
+
+        file = open("historial.txt", "a")
+        file.write(nombre + "," + time + "," + str(evento) + "\n")
 
 
     def setupUi(self, SelectorConfiguracionMPLS, remote_conn):
@@ -140,19 +196,7 @@ class Ui_SelectorConfiguracionMPLS(object):
         QtCore.QMetaObject.connectSlotsByName(SelectorConfiguracionMPLS)
 
         #######################################################################
-        evento = 1
-        arch = open("temp.txt", "r")
-        nombre = ""
-        time = ""
-        for linea in arch:
-            linea = linea.split(",")
-            nombre = linea[0]
-            time = linea[1]
-        arch.close()
-        self.historial(self.disp, nombre,time, evento)
 
-        file = open("historial.txt", "a")
-        file.write(nombre + "," + time + "," + str(evento)+"\n")
         self.btn_configurarP.clicked.connect(lambda : self.configurarP(remote_conn))
         self.btn_configurarPE.clicked.connect(lambda : self.showConfigurarPE(SelectorConfiguracionMPLS, remote_conn))
         self.btn_configurarCE.clicked.connect(lambda : self.showConfigurarCE(SelectorConfiguracionMPLS, remote_conn))
