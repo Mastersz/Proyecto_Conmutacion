@@ -13,3 +13,7 @@
  * Manual de Usuario
  * Artículo Científico
  * Video de funcionamiento
+
+## Funcionamiento
+Para poder ejecutar el programa se debe ejecutar el archivo login.py ubicado en la carpeta Codigo
+En caso de presentar error de módulo no encontrado con el nombre Código, se debe eliminar dicha palabra de todos los import de login.py, selectorConfiguracionMPLS.py y de remote.py
